@@ -4,6 +4,7 @@ import { Position } from './types';
 import { LineupCard } from './components/LineupCard';
 import { PopLibrary } from './components/PopLibrary';
 import { PositionModal } from './components/PositionModal';
+import { CreateCustomPopModal } from './components/CreateCustomPopModal';
 
 function App() {
   const {
@@ -16,6 +17,7 @@ function App() {
     assignPop,
     removePop,
     clearLineup,
+    addCustomPop,
     selectPop,
     setShowPositionModal,
     setShowCreatePopModal
@@ -125,33 +127,12 @@ function App() {
         }}
       />
 
-      {/* Custom Pop Modal Placeholder */}
-      {showCreatePopModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full border border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Create Custom Pop</h3>
-              <button
-                onClick={() => setShowCreatePopModal(false)}
-                className="text-gray-400 hover:text-white text-2xl font-bold"
-              >
-                ×
-              </button>
-            </div>
-            <div className="text-center py-8">
-              <div className="text-gray-400 mb-4">
-                Custom pop creation coming soon!
-              </div>
-              <button
-                onClick={() => setShowCreatePopModal(false)}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Custom Pop Modal */}
+      <CreateCustomPopModal
+        isOpen={showCreatePopModal}
+        onCreatePop={addCustomPop}
+        onClose={() => setShowCreatePopModal(false)}
+      />
 
       {/* Footer */}
       <footer className="bg-gray-800 border-t border-gray-700 mt-12">

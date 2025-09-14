@@ -17,7 +17,7 @@
   }
 
   .lineup-position.filled {
-    @apply border-blue-500 bg-blue-900 bg-opacity-30;
+    @apply border-blue-500 bg-blue-900/30;
   }
 
   .lineup-position.empty {

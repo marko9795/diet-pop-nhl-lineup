@@ -185,7 +185,9 @@ export const CollectionBrowser: React.FC<CollectionBrowserProps> = ({ pops }) =>
                   transform transition-all duration-300
                   hover:scale-105 hover:z-10
                   p-2 rounded-xl
-                  hover:bg-white hover:bg-opacity-5
+                  hover:bg-neon-blue hover:bg-opacity-8
+                  hover:border hover:border-neon-blue hover:border-opacity-30
+                  hover:shadow-lg hover:shadow-neon-blue hover:shadow-opacity-20
                 "
               >
                 <PopCan
@@ -225,7 +227,9 @@ export const CollectionBrowser: React.FC<CollectionBrowserProps> = ({ pops }) =>
                   transform transition-all duration-300
                   hover:scale-105 hover:z-10
                   p-2 rounded-xl
-                  hover:bg-white hover:bg-opacity-5
+                  hover:bg-neon-blue hover:bg-opacity-8
+                  hover:border hover:border-hockey-gold hover:border-opacity-40
+                  hover:shadow-lg hover:shadow-hockey-gold hover:shadow-opacity-20
                 "
               >
                 <PopCan

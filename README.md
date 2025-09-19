@@ -2,64 +2,109 @@
 
 A web application where users can organize their favorite diet sodas into NHL-style lineups with 4 forward lines and 3 defensive pairs, including the ability to add custom/limited edition pops to their personal library.
 
-## Features
+## ✨ Features
 
-- **Pop Library**: Pre-built database of 25+ major diet sodas with authentic brand colors
-- **NHL Lineup System**: 18 positions (4 forward lines + 3 defensive pairs)
-- **Visual Can Display**: 2D can representations with brand-accurate styling
-- **Pop Assignment**: Click-to-assign functionality with intuitive position selection
-- **Line Management**: Move pops between positions, promote/demote between lines
-- **Custom Pop Creation**: Add your own limited edition or custom pops
-- **Local Storage**: Persistent lineup and custom pop data
+- **🏒 Full NHL Lineup**: 18 positions (4 forward lines + 3 defensive pairs)
+- **🥤 25+ Diet Sodas**: Pre-built database with authentic brand colors and visual designs
+- **🎨 Custom Pop Creator**: Add your own limited edition or custom pops with full customization
+- **📱 Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
+- **💾 Auto-Save**: Persistent lineup and custom pop data with localStorage
+- **🔍 Search & Filter**: Find pops by brand, name, or custom status
+- **📊 Live Statistics**: Real-time lineup completion and assignment tracking
+- **🎯 Intuitive Interface**: Click-to-assign functionality with modal position selection
 
 ## Tech Stack
 
-- **Frontend**: React with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Storage**: localStorage API
+- **Frontend**: React 19.1.1 with TypeScript
+- **Build Tool**: Vite 7.1.2
+- **Styling**: Tailwind CSS 4.1.13
+- **Storage**: localStorage API for persistence
 
 ## Getting Started
 
+### Prerequisites
+- Node.js (version 18 or higher)
+- npm or yarn package manager
+
+### Installation & Development
+
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd pop-v2
+
 # Install dependencies
 npm install
 
 # Start development server
 npm run dev
 
-# Build for production
-npm run build
+# Visit http://localhost:5173 in your browser
 ```
 
-## Development Phases
+### Additional Commands
 
-### Phase 1A: Foundation ✅
-- [x] Project setup and basic structure
-- [x] Basic pop library implementation (25+ diet sodas)
-- [x] Lineup card layout with hockey formation
+```bash
+# Build for production
+npm run build
 
-### Phase 1B: Core Functionality ✅
-- [x] Pop assignment system with modal interface
-- [x] Line management features (move, remove, swap)
-- [x] Local storage integration with auto-save
+# Preview production build
+npm run preview
 
-### Phase 1C: Advanced Features ✅
-- [x] Custom pop creation with color picker
-- [x] Custom pop library management
-- [x] Brand-based style presets
-- [x] Form validation and error handling
-- [x] Real-time preview system
+# Run code linting
+npm run lint
+```
 
-## ✨ Features Complete
+## How to Use
 
-- **🏒 Full NHL Lineup**: 18 positions (4 forward lines + 3 defensive pairs)
-- **🥤 25+ Diet Sodas**: Authentic brand colors and visual designs
-- **🎨 Custom Pop Creator**: Full customization with color picker and presets
-- **📱 Responsive Design**: Works on desktop, tablet, and mobile
-- **💾 Auto-Save**: Local storage with persistent data
-- **🔍 Search & Filter**: Find pops by brand, name, or custom status
-- **📊 Live Statistics**: Lineup completion and assignment tracking
+1. **Select a Pop**: Click any diet soda in the Pop Library to select it (highlighted in yellow)
+2. **Choose Position**: Click any empty lineup position to open the position selection modal
+3. **Assign Pop**: Select the desired position to assign your chosen pop
+4. **Manage Lineup**: Click filled positions to remove pops, or use "Clear Lineup" to start over
+5. **Create Custom Pops**: Use the custom pop creator to add your own limited editions
+
+## Development & Contributing
+
+### Git Workflow
+
+**IMPORTANT**: All development work must be committed and pushed to git:
+
+```bash
+# After making changes
+git add .
+git commit -m "feat: describe your changes"
+git push
+```
+
+**Required for**:
+- New features and enhancements
+- Bug fixes and improvements
+- Component additions or modifications
+- Refactoring and code cleanup
+- Documentation updates
+
+### Development Guidelines
+
+- Run `npm run lint` before committing
+- Test thoroughly in development mode
+- Follow existing code patterns and conventions
+- Update documentation when adding features
+
+For detailed developer guidance, see `CLAUDE.md`.
+
+## Architecture Highlights
+
+- **Modular Component Design**: Separated concerns with reusable React components
+- **Centralized State Management**: Comprehensive `useAppState` hook with persistence
+- **Type-Safe Development**: Full TypeScript integration with proper type definitions
+- **Modern Styling**: Tailwind CSS with responsive design patterns
+- **Efficient Build Process**: Vite with Hot Module Replacement for fast development
+
+## Browser Compatibility
+
+- Modern browsers with ES6+ support
+- Mobile-responsive design optimized for touch interactions
+- localStorage API required for data persistence
 
 ## License
 

@@ -1,4 +1,4 @@
-import { Pop } from '../types';
+import type { Pop } from '../types';
 
 // Initial library of 25 popular diet sodas with authentic brand colors
 export const INITIAL_POPS: Pop[] = [

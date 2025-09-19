@@ -1,475 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-// Inline types to avoid import issues
-type Position =
-  | 'LW1' | 'C1' | 'RW1'
-  | 'LW2' | 'C2' | 'RW2'
-  | 'LW3' | 'C3' | 'RW3'
-  | 'LW4' | 'C4' | 'RW4'
-  | 'LD1' | 'RD1'
-  | 'LD2' | 'RD2'
-  | 'LD3' | 'RD3';
+// Import centralized types, data, and components with proper type imports
+import type { Position, Pop, Lineup } from './types';
+import { INITIAL_POPS } from './data/pops';
+import { LineupCard } from './components/LineupCard';
+import { PopLibrary } from './components/PopLibrary';
+import { TabNavigation } from './components/TabNavigation';
+import { CollectionBrowser } from './components/CollectionBrowser';
 
-interface Pop {
-  id: string;
-  name: string;
-  brand: string;
-  primaryColor: string;
-  secondaryColor: string;
-  isCustom: boolean;
-}
-
-interface Lineup {
-  id: string;
-  name: string;
-  positions: Record<Position, string | null>;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// Expanded pop library with hierarchical brand organization
-const SAMPLE_POPS: Pop[] = [
-  // === COCA-COLA FAMILY ===
-  // Core Coca-Cola Products
-  {
-    id: 'diet-coke',
-    name: 'Diet Coke',
-    brand: 'Coca-Cola',
-    primaryColor: '#C0C0C0',
-    secondaryColor: '#FF0000',
-    isCustom: false
-  },
-  {
-    id: 'coke-zero',
-    name: 'Coke Zero Sugar',
-    brand: 'Coca-Cola',
-    primaryColor: '#000000',
-    secondaryColor: '#FF0000',
-    isCustom: false
-  },
-  {
-    id: 'coke-zero-cherry-vanilla',
-    name: 'Coke Zero Sugar Cherry Vanilla',
-    brand: 'Coca-Cola',
-    primaryColor: '#8B0000',
-    secondaryColor: '#F5DEB3',
-    isCustom: false
-  },
-  {
-    id: 'coke-zero-orange-vanilla',
-    name: 'Coke Zero Sugar Orange Vanilla',
-    brand: 'Coca-Cola',
-    primaryColor: '#FF8C00',
-    secondaryColor: '#F5DEB3',
-    isCustom: false
-  },
-  {
-    id: 'tab',
-    name: 'Tab Cola',
-    brand: 'Coca-Cola',
-    primaryColor: '#FF1493',
-    secondaryColor: '#FFFFFF',
-    isCustom: false
-  },
-
-  // Diet Coke Variants
-  {
-    id: 'diet-coke-cherry',
-    name: 'Diet Coke Cherry',
-    brand: 'Coca-Cola',
-    primaryColor: '#8B0000',
-    secondaryColor: '#C0C0C0',
-    isCustom: false
-  },
-  {
-    id: 'diet-coke-vanilla',
-    name: 'Diet Coke Vanilla',
-    brand: 'Coca-Cola',
-    primaryColor: '#F5DEB3',
-    secondaryColor: '#C0C0C0',
-    isCustom: false
-  },
-  {
-    id: 'diet-coke-lime',
-    name: 'Diet Coke Lime',
-    brand: 'Coca-Cola',
-    primaryColor: '#32CD32',
-    secondaryColor: '#C0C0C0',
-    isCustom: false
-  },
-  {
-    id: 'diet-coke-orange-vanilla',
-    name: 'Diet Coke Orange Vanilla',
-    brand: 'Coca-Cola',
-    primaryColor: '#FF8C00',
-    secondaryColor: '#F5DEB3',
-    isCustom: false
-  },
-  {
-    id: 'diet-coke-twisted-mango',
-    name: 'Diet Coke Twisted Mango',
-    brand: 'Coca-Cola',
-    primaryColor: '#FF8C00',
-    secondaryColor: '#FFE4B5',
-    isCustom: false
-  },
-  {
-    id: 'diet-coke-caffeine-free',
-    name: 'Caffeine-Free Diet Coke',
-    brand: 'Coca-Cola',
-    primaryColor: '#C0C0C0',
-    secondaryColor: '#FF0000',
-    isCustom: false
-  },
-
-  // Diet Coke 2024 Limited Edition Comeback
-  {
-    id: 'diet-cherry-coke-retro',
-    name: 'Diet Cherry Coke (Retro Edition)',
-    brand: 'Coca-Cola',
-    primaryColor: '#DC143C',
-    secondaryColor: '#C0C0C0',
-    isCustom: false
-  },
-
-  // Coca-Cola Specialty
-  {
-    id: 'coke-energy-zero',
-    name: 'Coke Energy Zero Sugar',
-    brand: 'Coca-Cola',
-    primaryColor: '#FF0000',
-    secondaryColor: '#000000',
-    isCustom: false
-  },
-  {
-    id: 'sprite-zero',
-    name: 'Sprite Zero Sugar',
-    brand: 'Coca-Cola',
-    primaryColor: '#00AF3F',
-    secondaryColor: '#FFFFFF',
-    isCustom: false
-  },
-  {
-    id: 'fresca',
-    name: 'Fresca',
-    brand: 'Coca-Cola',
-    primaryColor: '#FF69B4',
-    secondaryColor: '#FFFFFF',
-    isCustom: false
-  },
-  {
-    id: 'diet-barqs',
-    name: "Diet Barq's Root Beer",
-    brand: 'Coca-Cola',
-    primaryColor: '#654321',
-    secondaryColor: '#8B4513',
-    isCustom: false
-  },
-
-  // === PEPSICO FAMILY ===
-  // Core Pepsi Products
-  {
-    id: 'diet-pepsi',
-    name: 'Diet Pepsi',
-    brand: 'PepsiCo',
-    primaryColor: '#004B93',
-    secondaryColor: '#B8C5D6',
-    isCustom: false
-  },
-  {
-    id: 'pepsi-zero',
-    name: 'Pepsi Zero Sugar',
-    brand: 'PepsiCo',
-    primaryColor: '#000000',
-    secondaryColor: '#004B93',
-    isCustom: false
-  },
-
-  // Diet Pepsi Variants
-  {
-    id: 'diet-pepsi-wild-cherry',
-    name: 'Diet Pepsi Wild Cherry',
-    brand: 'PepsiCo',
-    primaryColor: '#DC143C',
-    secondaryColor: '#004B93',
-    isCustom: false
-  },
-  {
-    id: 'diet-pepsi-caffeine-free',
-    name: 'Caffeine-Free Diet Pepsi',
-    brand: 'PepsiCo',
-    primaryColor: '#004B93',
-    secondaryColor: '#B8C5D6',
-    isCustom: false
-  },
-  {
-    id: 'diet-pepsi-lime',
-    name: 'Diet Pepsi Lime',
-    brand: 'PepsiCo',
-    primaryColor: '#32CD32',
-    secondaryColor: '#004B93',
-    isCustom: false
-  },
-
-  // Pepsi 2024-2025 New Releases
-  {
-    id: 'pepsi-zero-wild-cherry-cream',
-    name: 'Pepsi Zero Sugar Wild Cherry & Cream',
-    brand: 'PepsiCo',
-    primaryColor: '#8B0000',
-    secondaryColor: '#F5DEB3',
-    isCustom: false
-  },
-  {
-    id: 'pepsi-zero-cherries-cream',
-    name: 'Pepsi Zero Sugar Cherries and Cream',
-    brand: 'PepsiCo',
-    primaryColor: '#DC143C',
-    secondaryColor: '#FFFACD',
-    isCustom: false
-  },
-
-  // Mountain Dew Family
-  {
-    id: 'diet-mountain-dew',
-    name: 'Diet Mountain Dew',
-    brand: 'PepsiCo',
-    primaryColor: '#ADFF2F',
-    secondaryColor: '#228B22',
-    isCustom: false
-  },
-  {
-    id: 'mtn-dew-zero',
-    name: 'Mtn Dew Zero Sugar',
-    brand: 'PepsiCo',
-    primaryColor: '#000000',
-    secondaryColor: '#ADFF2F',
-    isCustom: false
-  },
-
-  // Mountain Dew 2024-2025 New Releases
-  {
-    id: 'mtn-dew-zero-summer-freeze',
-    name: 'Mtn Dew Zero Sugar Summer Freeze',
-    brand: 'PepsiCo',
-    primaryColor: '#FF0000',
-    secondaryColor: '#4169E1',
-    isCustom: false
-  },
-  {
-    id: 'mtn-dew-zero-cherry-lemon-trolli',
-    name: 'Mtn Dew Zero Sugar Cherry Lemon Trolli',
-    brand: 'PepsiCo',
-    primaryColor: '#DC143C',
-    secondaryColor: '#FFFF00',
-    isCustom: false
-  },
-  {
-    id: 'mtn-dew-baja-blast-cabo-citrus-zero',
-    name: 'Mtn Dew Baja Blast Cabo Citrus Zero Sugar',
-    brand: 'PepsiCo',
-    primaryColor: '#40E0D0',
-    secondaryColor: '#FF8C00',
-    isCustom: false
-  },
-
-  // PepsiCo Citrus
-  {
-    id: 'sierra-mist-zero',
-    name: 'Sierra Mist Zero Sugar',
-    brand: 'PepsiCo',
-    primaryColor: '#FFFF00',
-    secondaryColor: '#FFFFFF',
-    isCustom: false
-  },
-
-  // === DR PEPPER FAMILY ===
-  // Core Dr Pepper Products
-  {
-    id: 'diet-dr-pepper',
-    name: 'Diet Dr Pepper',
-    brand: 'Dr Pepper',
-    primaryColor: '#722F37',
-    secondaryColor: '#B8860B',
-    isCustom: false
-  },
-  {
-    id: 'dr-pepper-zero',
-    name: 'Dr Pepper Zero Sugar',
-    brand: 'Dr Pepper',
-    primaryColor: '#000000',
-    secondaryColor: '#722F37',
-    isCustom: false
-  },
-
-  // Dr Pepper Variants
-  {
-    id: 'diet-dr-pepper-cherry',
-    name: 'Diet Dr Pepper Cherry',
-    brand: 'Dr Pepper',
-    primaryColor: '#8B0000',
-    secondaryColor: '#722F37',
-    isCustom: false
-  },
-  {
-    id: 'diet-dr-pepper-cream-soda',
-    name: 'Diet Dr Pepper Cream Soda',
-    brand: 'Dr Pepper',
-    primaryColor: '#F5DEB3',
-    secondaryColor: '#722F37',
-    isCustom: false
-  },
-  {
-    id: 'diet-dr-pepper-caffeine-free',
-    name: 'Caffeine-Free Diet Dr Pepper',
-    brand: 'Dr Pepper',
-    primaryColor: '#722F37',
-    secondaryColor: '#B8860B',
-    isCustom: false
-  },
-
-  // Dr Pepper 2024 New Release
-  {
-    id: 'dr-pepper-zero-creamy-coconut',
-    name: 'Dr Pepper Zero Sugar Creamy Coconut',
-    brand: 'Dr Pepper',
-    primaryColor: '#FFFAF0',
-    secondaryColor: '#722F37',
-    isCustom: false
-  },
-
-  // === CITRUS FAMILY ===
-  {
-    id: 'diet-7up',
-    name: 'Diet 7UP',
-    brand: '7UP',
-    primaryColor: '#32CD32',
-    secondaryColor: '#FFFFFF',
-    isCustom: false
-  },
-
-  // 7UP 2024 Limited Edition Return
-  {
-    id: '7up-shirley-temple-zero',
-    name: '7UP Shirley Temple Zero Sugar',
-    brand: '7UP',
-    primaryColor: '#FF69B4',
-    secondaryColor: '#32CD32',
-    isCustom: false
-  },
-
-  // === ORANGE SODA FAMILY ===
-  {
-    id: 'diet-orange-crush',
-    name: 'Diet Orange Crush',
-    brand: 'Crush',
-    primaryColor: '#FF8C00',
-    secondaryColor: '#FFE4B5',
-    isCustom: false
-  },
-  {
-    id: 'diet-sunkist',
-    name: 'Diet Sunkist Orange',
-    brand: 'Sunkist',
-    primaryColor: '#FFA500',
-    secondaryColor: '#FFFF00',
-    isCustom: false
-  },
-  {
-    id: 'diet-fanta-orange',
-    name: 'Fanta Zero Orange',
-    brand: 'Coca-Cola',
-    primaryColor: '#FF6600',
-    secondaryColor: '#FFE4B5',
-    isCustom: false
-  },
-
-  // === ROOT BEER FAMILY ===
-  {
-    id: 'diet-a-w',
-    name: 'Diet A&W Root Beer',
-    brand: 'A&W',
-    primaryColor: '#8B4513',
-    secondaryColor: '#D2691E',
-    isCustom: false
-  },
-  {
-    id: 'diet-mug',
-    name: 'Diet Mug Root Beer',
-    brand: 'PepsiCo',
-    primaryColor: '#654321',
-    secondaryColor: '#D2691E',
-    isCustom: false
-  },
-
-  // A&W 2024 Limited Edition
-  {
-    id: 'a-w-zero-ice-cream-sundae',
-    name: 'A&W Zero Sugar Ice Cream Sundae',
-    brand: 'A&W',
-    primaryColor: '#FFFACD',
-    secondaryColor: '#8B4513',
-    isCustom: false
-  },
-
-  // === SPECIALTY SODAS ===
-  // Canada Dry Family (Updated 2024 branding)
-  {
-    id: 'canada-dry-zero-ginger-ale',
-    name: 'Canada Dry Zero Sugar Ginger Ale',
-    brand: 'Canada Dry',
-    primaryColor: '#DAA520',
-    secondaryColor: '#FFFFFF',
-    isCustom: false
-  },
-  {
-    id: 'canada-dry-zero-fruit-splash',
-    name: 'Canada Dry Zero Sugar Fruit Splash',
-    brand: 'Canada Dry',
-    primaryColor: '#DC143C',
-    secondaryColor: '#DAA520',
-    isCustom: false
-  },
-  {
-    id: 'diet-schweppes-ginger-ale',
-    name: 'Schweppes Diet Ginger Ale',
-    brand: 'Schweppes',
-    primaryColor: '#FFD700',
-    secondaryColor: '#FFFFFF',
-    isCustom: false
-  },
-  {
-    id: 'diet-schweppes-tonic',
-    name: 'Schweppes Diet Tonic Water',
-    brand: 'Schweppes',
-    primaryColor: '#E6E6FA',
-    secondaryColor: '#4169E1',
-    isCustom: false
-  }
-];
-
-// Simple lineup utility
+// Enhanced lineup utility with vintage naming
 const createEmptyLineup = (): Lineup => ({
   id: crypto.randomUUID(),
-  name: 'My Lineup',
+  name: 'Dream Team',
   positions: {
-    'LW1': null, 'C1': null, 'RW1': null,
-    'LW2': null, 'C2': null, 'RW2': null,
-    'LW3': null, 'C3': null, 'RW3': null,
-    'LW4': null, 'C4': null, 'RW4': null,
-    'LD1': null, 'RD1': null,
-    'LD2': null, 'RD2': null,
-    'LD3': null, 'RD3': null
+    '1C': null, '1LW': null, '1RW': null,
+    '2C': null, '2LW': null, '2RW': null,
+    '3C': null, '3LW': null, '3RW': null,
+    '4C': null, '4LW': null, '4RW': null,
+    '1LD': null, '1RD': null,
+    '2LD': null, '2RD': null,
+    '3LD': null, '3RD': null
   },
   createdAt: new Date(),
   updatedAt: new Date()
 });
 
 function App() {
-  console.log('🥤 Starting self-contained Diet Pop NHL Lineup App');
+  console.log('🥤⚡ Diet Pop NHL Lineup - Vintage 80s Hockey Edition! ⚡🥤');
 
+  // Enhanced state management
   const [currentLineup, setCurrentLineup] = useState<Lineup>(() => createEmptyLineup());
   const [selectedPop, setSelectedPop] = useState<Pop | null>(null);
+  const [availablePops] = useState<Pop[]>(INITIAL_POPS);
+  const [activeTab, setActiveTab] = useState<'lineup' | 'collection'>('lineup');
+
+  // Enhanced pop assignment with better UX
+  const handlePositionClick = (position: Position) => {
+    const currentPop = getPopForPosition(position);
+
+    if (currentPop) {
+      // Remove pop from position
+      removePop(position);
+    } else if (selectedPop) {
+      // Assign selected pop to position
+      assignPop(selectedPop.id, position);
+    }
+  };
 
   const assignPop = (popId: string, position: Position) => {
     setCurrentLineup(prev => ({
@@ -480,7 +56,7 @@ function App() {
       },
       updatedAt: new Date()
     }));
-    setSelectedPop(null);
+    // Keep pop selected for multiple assignments
   };
 
   const removePop = (position: Position) => {
@@ -496,214 +72,225 @@ function App() {
 
   const clearLineup = () => {
     setCurrentLineup(createEmptyLineup());
+    setSelectedPop(null);
   };
 
-  const getPopById = (id: string) => SAMPLE_POPS.find(pop => pop.id === id);
+  const handlePopClick = (pop: Pop) => {
+    setSelectedPop(selectedPop?.id === pop.id ? null : pop);
+  };
 
-  // Simple position renderer
-  const renderPosition = (position: Position, label: string) => {
+  const getPopForPosition = (position: Position): Pop | null => {
     const popId = currentLineup.positions[position];
-    const pop = popId ? getPopById(popId) : null;
-
-    return (
-      <div
-        key={position}
-        className="lineup-position"
-        style={{
-          border: '2px dashed #6b7280',
-          borderRadius: '8px',
-          padding: '12px',
-          minHeight: '80px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          backgroundColor: pop ? '#1e40af' : '#374151',
-          borderColor: pop ? '#3b82f6' : '#6b7280'
-        }}
-        onClick={() => {
-          if (pop) {
-            removePop(position);
-          } else if (selectedPop) {
-            assignPop(selectedPop.id, position);
-          }
-        }}
-      >
-        <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
-          {label}
-        </div>
-        {pop ? (
-          <div style={{
-            backgroundColor: pop.primaryColor,
-            color: pop.primaryColor === '#000000' ? 'white' : 'black',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontWeight: 'bold'
-          }}>
-            {pop.name}
-          </div>
-        ) : (
-          <div style={{ color: '#6b7280', fontSize: '12px' }}>Empty</div>
-        )}
-      </div>
-    );
+    if (!popId) return null;
+    return availablePops.find(pop => pop.id === popId) || null;
   };
+
+  const assignedCount = Object.values(currentLineup.positions).filter(Boolean).length;
+  const completionPercentage = Math.round((assignedCount / 18) * 100);
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#111827', color: 'white', padding: '20px' }}>
-      {/* Header */}
-      <header style={{ backgroundColor: '#1f2937', padding: '24px', borderRadius: '8px', marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', margin: '0 0 8px 0' }}>
-          🥤 Diet Pop NHL Lineup
-        </h1>
-        <p style={{ color: '#9ca3af', margin: '0 0 16px 0' }}>
-          Organize your favorite diet sodas into hockey formations
-        </p>
-        <button
-          onClick={clearLineup}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#dc2626',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: '500'
-          }}
-        >
-          Clear Lineup
-        </button>
+    <div className="min-h-screen relative overflow-x-hidden">
+      {/* Vintage Arena Header/Scoreboard */}
+      <header className="relative z-10 mb-8">
+        <div className="arena-display mx-4 lg:mx-8 p-8 animate-slide-in">
+          {/* Main Title with Neon Effects */}
+          <div className="text-center mb-6">
+            <div className="relative inline-block">
+              <h1 className="text-5xl lg:text-7xl font-hockey font-black text-white mb-3 tracking-wider uppercase">
+                Diet Pop Arena
+              </h1>
+              <div className="absolute inset-0 text-5xl lg:text-7xl font-hockey font-black text-neon-blue opacity-20 blur-lg tracking-wider uppercase">
+                Diet Pop Arena
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="hockey-line-header text-base px-6 py-2">
+                ⚡ VINTAGE 80'S HOCKEY LINEUP SYSTEM ⚡
+              </div>
+            </div>
+
+            <p className="text-ice-400 font-retro tracking-wide text-lg max-w-2xl mx-auto">
+              Build your ultimate diet soda hockey team with authentic vintage styling
+            </p>
+          </div>
+
+          {/* Enhanced Scoreboard Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            {/* Team Name */}
+            <div className="text-center">
+              <div className="hockey-line-header bg-gradient-to-r from-neon-blue to-neon-cyan text-black mb-2">
+                Team Name
+              </div>
+              <div className="text-2xl font-hockey font-black text-neon-blue">
+                {currentLineup.name.toUpperCase()}
+              </div>
+            </div>
+
+            {/* Completion */}
+            <div className="text-center">
+              <div className="hockey-line-header bg-gradient-to-r from-hockey-gold to-yellow-500 text-black mb-2">
+                Completion
+              </div>
+              <div className="text-2xl font-hockey font-black text-hockey-gold">
+                {completionPercentage}%
+              </div>
+            </div>
+
+            {/* Players */}
+            <div className="text-center">
+              <div className="hockey-line-header bg-gradient-to-r from-neon-green to-green-400 text-black mb-2">
+                Players
+              </div>
+              <div className="text-2xl font-hockey font-black text-neon-green">
+                {assignedCount}/18
+              </div>
+            </div>
+
+            {/* Available Pops */}
+            <div className="text-center">
+              <div className="hockey-line-header bg-gradient-to-r from-hockey-silver to-gray-400 text-black mb-2">
+                Arsenal
+              </div>
+              <div className="text-2xl font-hockey font-black text-hockey-silver">
+                {availablePops.length}
+              </div>
+            </div>
+          </div>
+
+          {/* Enhanced Control Panel */}
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {/* Clear Lineup Button */}
+            <button
+              onClick={clearLineup}
+              className="
+                chrome-button px-6 py-3 rounded-lg
+                font-retro font-bold tracking-wide uppercase
+                transition-all duration-300
+                transform hover:scale-105 active:scale-95
+                bg-gradient-to-r from-red-500 to-red-700
+                hover:from-red-600 hover:to-red-800
+                text-white shadow-lg hover:shadow-xl
+              "
+            >
+              🔄 Reset Team
+            </button>
+
+            {/* Quick Stats */}
+            {selectedPop && (
+              <div className="flex items-center gap-3 px-4 py-2 bg-gray-900 bg-opacity-80 rounded-lg border border-neon-blue border-opacity-50">
+                <div className="w-3 h-3 bg-neon-blue rounded-full animate-pulse" />
+                <span className="font-retro text-neon-blue font-semibold tracking-wide">
+                  {selectedPop.name} selected
+                </span>
+              </div>
+            )}
+
+            {/* Completion Badge */}
+            {completionPercentage === 100 && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-hockey-gold to-yellow-500 rounded-lg text-black">
+                <div className="text-xl">🏆</div>
+                <span className="font-hockey font-black tracking-wide uppercase">
+                  Team Complete!
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-        {/* Pop Library */}
-        <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '16px' }}>Pop Library</h2>
-          <p style={{ color: '#9ca3af', marginBottom: '16px' }}>
-            Selected: {selectedPop ? selectedPop.name : 'None'}
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
-            {SAMPLE_POPS.map(pop => (
-              <div
-                key={pop.id}
-                onClick={() => setSelectedPop(selectedPop?.id === pop.id ? null : pop)}
-                style={{
-                  backgroundColor: pop.primaryColor,
-                  color: pop.primaryColor === '#000000' ? 'white' : 'black',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  border: selectedPop?.id === pop.id ? '3px solid #fbbf24' : '2px solid transparent',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>
-                  {pop.name}
-                </div>
-                <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                  {pop.brand}
-                </div>
-              </div>
-            ))}
+      {/* Tab Navigation */}
+      <TabNavigation
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+
+      {/* Main Application Content */}
+      <main className="px-4 lg:px-8 pb-8">
+        {activeTab === 'lineup' ? (
+          // Lineup Builder View
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-w-[2000px] mx-auto">
+            {/* Pop Arsenal/Library */}
+            <div className="order-2 xl:order-1">
+              <PopLibrary
+                pops={availablePops}
+                onPopClick={handlePopClick}
+                selectedPop={selectedPop}
+              />
+            </div>
+
+            {/* Hockey Lineup Card */}
+            <div className="order-1 xl:order-2">
+              <LineupCard
+                lineup={currentLineup}
+                availablePops={availablePops}
+                onPositionClick={handlePositionClick}
+                onPopRemove={removePop}
+                selectedPop={selectedPop}
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          // Collection Browser View
+          <div className="max-w-[2000px] mx-auto">
+            <CollectionBrowser pops={availablePops} />
+          </div>
+        )}
+      </main>
 
-        {/* Lineup Card */}
-        <div>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '16px' }}>NHL Lineup</h2>
-          <div style={{ backgroundColor: '#1f2937', padding: '20px', borderRadius: '8px' }}>
+      {/* Enhanced Instructions Panel */}
+      <footer className="px-4 lg:px-8 pb-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="arena-display p-6">
+            <div className="text-center mb-4">
+              <h3 className="text-xl font-hockey font-black text-neon-cyan tracking-widest uppercase mb-2">
+                How to Play
+              </h3>
+              <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan to-transparent"></div>
+            </div>
 
-            {/* Forward Lines */}
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '12px', color: '#fbbf24' }}>Forwards</h3>
-
-              <div style={{ marginBottom: '16px' }}>
-                <h4 style={{ fontSize: '1rem', marginBottom: '8px' }}>Line 1</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                  {renderPosition('LW1', 'LW')}
-                  {renderPosition('C1', 'C')}
-                  {renderPosition('RW1', 'RW')}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+              <div className="flex flex-col items-center">
+                <div className="text-3xl mb-2">🎯</div>
+                <div className="font-retro text-ice-400 text-sm tracking-wide">
+                  <strong className="text-neon-blue">Select</strong> a pop from the arsenal
                 </div>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <h4 style={{ fontSize: '1rem', marginBottom: '8px' }}>Line 2</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                  {renderPosition('LW2', 'LW')}
-                  {renderPosition('C2', 'C')}
-                  {renderPosition('RW2', 'RW')}
+              <div className="flex flex-col items-center">
+                <div className="text-3xl mb-2">🏒</div>
+                <div className="font-retro text-ice-400 text-sm tracking-wide">
+                  <strong className="text-hockey-gold">Assign</strong> to any lineup position
                 </div>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <h4 style={{ fontSize: '1rem', marginBottom: '8px' }}>Line 3</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                  {renderPosition('LW3', 'LW')}
-                  {renderPosition('C3', 'C')}
-                  {renderPosition('RW3', 'RW')}
+              <div className="flex flex-col items-center">
+                <div className="text-3xl mb-2">⚡</div>
+                <div className="font-retro text-ice-400 text-sm tracking-wide">
+                  <strong className="text-neon-green">Click</strong> filled slots to remove
                 </div>
               </div>
 
-              <div>
-                <h4 style={{ fontSize: '1rem', marginBottom: '8px' }}>Line 4</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                  {renderPosition('LW4', 'LW')}
-                  {renderPosition('C4', 'C')}
-                  {renderPosition('RW4', 'RW')}
+              <div className="flex flex-col items-center">
+                <div className="text-3xl mb-2">🏆</div>
+                <div className="font-retro text-ice-400 text-sm tracking-wide">
+                  <strong className="text-hockey-silver">Complete</strong> your dream team
                 </div>
               </div>
             </div>
 
-            {/* Defense Pairs */}
-            <div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '12px', color: '#10b981' }}>Defense</h3>
-
-              <div style={{ marginBottom: '16px' }}>
-                <h4 style={{ fontSize: '1rem', marginBottom: '8px' }}>Pair 1</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  {renderPosition('LD1', 'LD')}
-                  {renderPosition('RD1', 'RD')}
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '16px' }}>
-                <h4 style={{ fontSize: '1rem', marginBottom: '8px' }}>Pair 2</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  {renderPosition('LD2', 'LD')}
-                  {renderPosition('RD2', 'RD')}
-                </div>
-              </div>
-
-              <div>
-                <h4 style={{ fontSize: '1rem', marginBottom: '8px' }}>Pair 3</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  {renderPosition('LD3', 'LD')}
-                  {renderPosition('RD3', 'RD')}
-                </div>
+            {/* System Status */}
+            <div className="mt-6 pt-4 border-t border-ice-700 text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-neon-green bg-opacity-20 rounded-full border border-neon-green border-opacity-50">
+                <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse" />
+                <span className="text-xs font-retro text-neon-green tracking-wide uppercase">
+                  Arena Systems Online | {INITIAL_POPS.length} Pops Loaded | Vintage Mode Active
+                </span>
               </div>
             </div>
-
           </div>
         </div>
-      </div>
-
-      {/* Instructions */}
-      <div style={{
-        marginTop: '24px',
-        padding: '16px',
-        backgroundColor: '#1f2937',
-        borderRadius: '8px',
-        color: '#9ca3af'
-      }}>
-        <p><strong>How to use:</strong></p>
-        <p>1. Click a pop in the library to select it (highlighted in yellow)</p>
-        <p>2. Click an empty position to assign the selected pop</p>
-        <p>3. Click a filled position to remove the pop</p>
-        <p>4. Use "Clear Lineup" to start over</p>
-      </div>
+      </footer>
     </div>
   );
 }

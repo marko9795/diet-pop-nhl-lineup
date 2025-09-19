@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pop, Position, POSITION_INFO } from '../types';
+import type { Pop, Position } from '../types';
+import { POSITION_INFO } from '../types';
 import { PopCan } from './PopCan';
 
 interface PositionModalProps {

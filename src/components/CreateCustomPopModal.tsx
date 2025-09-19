@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CustomPop } from '../types';
-import { getAllBrands } from '../data/pops';
+import type { CustomPop } from '../types';
+// import { getAllBrands } from '../data/pops'; // Available for future brand suggestions
 import { PopCan } from './PopCan';
 
 interface CreateCustomPopModalProps {
@@ -57,7 +57,7 @@ export const CreateCustomPopModal: React.FC<CreateCustomPopModalProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const availableBrands = getAllBrands();
+  // const availableBrands = getAllBrands(); // Available for future brand suggestions
 
   // Handle input changes
   const handleChange = (field: string, value: string | number) => {

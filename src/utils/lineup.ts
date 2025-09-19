@@ -1,4 +1,5 @@
-import { Lineup, Position, POSITION_INFO } from '../types';
+import type { Lineup, Position, Pop } from '../types';
+import { POSITION_INFO } from '../types';
 
 // Create an empty lineup
 export const createEmptyLineup = (name = 'My Lineup'): Lineup => ({
@@ -148,7 +149,7 @@ export interface LineupStats {
   avgCaffeine: number;
 }
 
-export const getLineupStats = (lineup: Lineup, availablePops: any[]): LineupStats => {
+export const getLineupStats = (lineup: Lineup, availablePops: Pop[]): LineupStats => {
   const assignedPopIds = getAssignedPops(lineup);
   const assignedPops = assignedPopIds.map(id =>
     availablePops.find(pop => pop.id === id)

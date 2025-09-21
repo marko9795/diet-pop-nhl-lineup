@@ -93,20 +93,14 @@ function App() {
       {/* Vintage Arena Header/Scoreboard */}
       <header className="relative z-10 mb-8">
         <div className="arena-display mx-4 lg:mx-8 p-8 animate-slide-in">
-          {/* Main Title with Neon Effects */}
+          {/* Main Title */}
           <div className="text-center mb-6">
             <div className="relative inline-block">
-              <h1 className="text-5xl lg:text-7xl font-hockey font-black text-white mb-3 tracking-wider uppercase">
-                Diet Pop Arena
+              <h1 className="text-4xl lg:text-6xl font-hockey font-black text-hockey-gold mb-4 tracking-wider uppercase">
+                Hockey Lineup System
               </h1>
-              <div className="absolute inset-0 text-5xl lg:text-7xl font-hockey font-black text-neon-blue opacity-20 blur-lg tracking-wider uppercase">
-                Diet Pop Arena
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="hockey-line-header text-base px-6 py-2">
-                ⚡ VINTAGE 80'S HOCKEY LINEUP SYSTEM ⚡
+              <div className="absolute inset-0 text-4xl lg:text-6xl font-hockey font-black text-yellow-500 opacity-30 blur-sm tracking-wider uppercase">
+                Hockey Lineup System
               </div>
             </div>
 

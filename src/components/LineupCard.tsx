@@ -134,15 +134,7 @@ export const LineupCard: React.FC<LineupCardProps> = ({
     <div className="hockey-card p-8 animate-fade-in">
       {/* Vintage Hockey Card Header */}
       <div className="text-center mb-8 relative">
-        <div className="inline-block relative">
-          <h2 className="text-4xl font-hockey font-black text-white mb-2 tracking-wider uppercase">
-            {lineup.name}
-          </h2>
-          <div className="absolute inset-0 text-4xl font-hockey font-black text-neon-blue opacity-30 blur-sm tracking-wider uppercase">
-            {lineup.name}
-          </div>
-        </div>
-        <div className="hockey-line-header inline-block text-sm mt-3 px-4 py-1">
+        <div className="hockey-line-header inline-block text-lg px-8 py-3">
           ⚡ DIET POP HOCKEY LINEUP ⚡
         </div>
       </div>

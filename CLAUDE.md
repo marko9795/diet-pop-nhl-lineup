@@ -42,6 +42,7 @@ import { Position, Pop, Lineup } from './types';
 - `LineupCard.tsx` - Hockey formation with 3D position slots
 - `PopCan.tsx` - Realistic 3D metallic pop cans with authentic branding
 - `PopDropdown.tsx` - Searchable pop selector with hockey styling
+- `CreatePopModal.tsx` - Custom pop creation modal with live preview and color pickers
 
 ### Data Structure
 **Hockey Positions**: `1LW`, `1C`, `1RW` through `4LW`, `4C`, `4RW` (forwards) + `1LD`, `1RD` through `3LD`, `3RD` (defense)
@@ -66,6 +67,14 @@ interface Lineup {
 - `src/utils/lineup.ts` - Lineup management utilities
 - `src/index.css` - Custom 3D effects, animations, arena styling
 - `tailwind.config.js` - Vintage hockey color palette (ice-, neon-, hockey- prefixed)
+
+### Custom Pop Creation
+**Feature**: Users can create custom pops via "CREATE NEW" button in PopLibrary
+- **CreatePopModal.tsx**: Full-featured creation form with live preview
+- **Form Fields**: Name, Brand, Description, Caffeine, Calories, Year, Color palette
+- **Visual Design**: Color pickers with live 3D pop can preview
+- **Persistence**: Custom pops saved to localStorage, integrated with main collection
+- **Validation**: Required field checks, automatic custom badge assignment
 
 ## Development Workflow
 

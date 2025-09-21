@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Import centralized types, data, and components with proper type imports
 import type { Position, Pop, Lineup } from './types';
@@ -7,6 +7,7 @@ import { LineupCard } from './components/LineupCard';
 import { PopLibrary } from './components/PopLibrary';
 import { TabNavigation } from './components/TabNavigation';
 import { CollectionBrowser } from './components/CollectionBrowser';
+import { CreatePopModal } from './components/CreatePopModal';
 
 // Enhanced lineup utility with vintage naming
 const createEmptyLineup = (): Lineup => ({
@@ -31,8 +32,16 @@ function App() {
   // Enhanced state management
   const [currentLineup, setCurrentLineup] = useState<Lineup>(() => createEmptyLineup());
   const [selectedPop, setSelectedPop] = useState<Pop | null>(null);
-  const [availablePops] = useState<Pop[]>(INITIAL_POPS);
+  const [availablePops, setAvailablePops] = useState<Pop[]>([]);
   const [activeTab, setActiveTab] = useState<'lineup' | 'collection'>('lineup');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // Load pops from localStorage or use initial pops
+  useEffect(() => {
+    const savedCustomPops = localStorage.getItem('customPops');
+    const customPops = savedCustomPops ? JSON.parse(savedCustomPops) : [];
+    setAvailablePops([...INITIAL_POPS, ...customPops]);
+  }, []);
 
   // Enhanced pop assignment with better UX
   const handlePositionClick = (position: Position) => {
@@ -77,6 +86,20 @@ function App() {
 
   const handlePopClick = (pop: Pop) => {
     setSelectedPop(selectedPop?.id === pop.id ? null : pop);
+  };
+
+  const handleCreatePop = (newPop: Pop) => {
+    // Add to available pops
+    setAvailablePops(prev => [...prev, newPop]);
+
+    // Save custom pops to localStorage
+    const savedCustomPops = localStorage.getItem('customPops');
+    const existingCustomPops = savedCustomPops ? JSON.parse(savedCustomPops) : [];
+    const updatedCustomPops = [...existingCustomPops, newPop];
+    localStorage.setItem('customPops', JSON.stringify(updatedCustomPops));
+
+    // Auto-select the new pop
+    setSelectedPop(newPop);
   };
 
   const getPopForPosition = (position: Position): Pop | null => {
@@ -210,6 +233,7 @@ function App() {
                 pops={availablePops}
                 onPopClick={handlePopClick}
                 selectedPop={selectedPop}
+                onAddCustomPop={() => setShowCreateModal(true)}
               />
             </div>
 
@@ -278,13 +302,20 @@ function App() {
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-neon-green bg-opacity-20 rounded-full border border-neon-green border-opacity-50">
                 <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse" />
                 <span className="text-xs font-retro text-neon-green tracking-wide uppercase">
-                  Arena Systems Online | {INITIAL_POPS.length} Pops Loaded | Vintage Mode Active
+                  Arena Systems Online | {availablePops.length} Pops Loaded | Custom Creation Active
                 </span>
               </div>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Create Pop Modal */}
+      <CreatePopModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreatePop={handleCreatePop}
+      />
     </div>
   );
 }

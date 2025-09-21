@@ -129,13 +129,10 @@ export const PopLibrary: React.FC<PopLibraryProps> = ({
               <button
                 onClick={onAddCustomPop}
                 className="
-                  bg-gradient-to-r from-neon-blue to-neon-cyan
-                  hover:from-neon-cyan hover:to-neon-blue
-                  text-black font-retro font-bold tracking-wide uppercase
-                  px-4 py-2 rounded-lg
+                  chrome-button px-4 py-2 rounded-lg
+                  font-retro font-bold tracking-wide uppercase
                   transition-all duration-300
                   transform hover:scale-105 active:scale-95
-                  shadow-neon hover:shadow-neon-strong
                 "
               >
                 + New Pop

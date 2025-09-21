@@ -34,14 +34,15 @@ import { Position, Pop, Lineup } from './types';
 - **Storage**: localStorage API for persistence
 
 ### Key Components
-- `App.tsx` - Main arena application with tab navigation (Lineup Builder + Collection Browser)
-- `TabNavigation.tsx` - Hockey-themed tab switching interface
+- `App.tsx` - Main arena application with 3-tab navigation (Lineup Builder + Collection Browser + Pop Cards)
+- `TabNavigation.tsx` - Hockey-themed tab switching interface with 3 tabs
 - `PopLibrary.tsx` - Arsenal display with search/filter for lineup building
-- `CollectionBrowser.tsx` - Full collection view with improved spacing and dropdown selector
+- `CollectionBrowser.tsx` - Full collection view with improved spacing (clean grid display)
+- `PopCards.tsx` - Dedicated pop inspection tab with dropdown selector and stats display
 - `PopStatsCard.tsx` - Detailed pop inspection with extra-large 3D display
 - `LineupCard.tsx` - Hockey formation with 3D position slots
 - `PopCan.tsx` - Realistic 3D metallic pop cans with authentic branding
-- `PopDropdown.tsx` - Searchable pop selector with hockey styling
+- `PopDropdown.tsx` - Simple select-based pop selector with retro styling
 - `CreatePopModal.tsx` - Custom pop creation modal with live preview and color pickers
 
 ### Data Structure
@@ -68,8 +69,26 @@ interface Lineup {
 - `src/index.css` - Custom 3D effects, animations, arena styling
 - `tailwind.config.js` - Vintage hockey color palette (ice-, neon-, hockey- prefixed)
 
+### 3-Tab Architecture
+**Clean separation of functionality across three dedicated tabs:**
+
+**🏒 Lineup Builder Tab**:
+- PopLibrary component (arsenal with search/filter and CREATE NEW button)
+- LineupCard component (hockey formation with 18 position slots)
+- Focus: Building and managing hockey lineups
+
+**🥤 Collection Browser Tab**:
+- Clean grid display of all pops (standard + custom)
+- Search and brand filtering
+- Focus: Browsing the complete collection
+
+**🃏 Pop Cards Tab**:
+- PopDropdown selector (simple select-based, reliable across all browsers)
+- PopStatsCard display (detailed pop inspection with large 3D display)
+- Focus: Examining individual pop details and statistics
+
 ### Custom Pop Creation
-**Feature**: Users can create custom pops via "CREATE NEW" button in PopLibrary
+**Feature**: Users can create custom pops via "CREATE NEW" button in PopLibrary (Lineup Builder tab)
 - **CreatePopModal.tsx**: Full-featured creation form with live preview
 - **Form Fields**: Name, Brand, Description, Caffeine, Calories, Year, Color palette
 - **Visual Design**: Color pickers with live 3D pop can preview

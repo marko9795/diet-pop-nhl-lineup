@@ -296,6 +296,11 @@
     pointer-events: none;
   }
 
+  /* Pop Inspector Container - allows dropdown to extend beyond bounds */
+  .pop-inspector-container {
+    overflow: visible !important;
+  }
+
   /* Chrome Button Effects */
   .chrome-button {
     background: var(--chrome-gradient);

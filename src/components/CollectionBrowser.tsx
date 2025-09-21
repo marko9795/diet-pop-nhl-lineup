@@ -1,8 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { Pop } from '../types';
 import { PopCan } from './PopCan';
-import { PopDropdown } from './PopDropdown';
-import { PopStatsCard } from './PopStatsCard';
 import { getAllBrands } from '../data/pops';
 
 interface CollectionBrowserProps {
@@ -13,7 +11,6 @@ export const CollectionBrowser: React.FC<CollectionBrowserProps> = ({ pops }) =>
   const [selectedBrand, setSelectedBrand] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showCustomOnly, setShowCustomOnly] = useState(false);
-  const [selectedPopForStats, setSelectedPopForStats] = useState<Pop | null>(null);
 
   const brands = useMemo(() => getAllBrands(), []);
 
@@ -37,37 +34,11 @@ export const CollectionBrowser: React.FC<CollectionBrowserProps> = ({ pops }) =>
       {/* Collection Header */}
       <div className="arena-display p-8 animate-fade-in">
         <div className="text-center mb-8 relative">
-          <div className="inline-block relative">
-            <h2 className="text-4xl font-hockey font-black text-white mb-2 tracking-wider uppercase">
-              Collection Browser
-            </h2>
-            <div className="absolute inset-0 text-4xl font-hockey font-black text-hockey-gold opacity-30 blur-sm tracking-wider uppercase">
-              Collection Browser
-            </div>
-          </div>
-          <div className="hockey-line-header inline-block text-sm mt-3 px-4 py-1">
+          <div className="hockey-line-header inline-block text-lg px-8 py-3">
             🏆 COMPLETE COLLECTION VIEW 🏆
           </div>
         </div>
 
-        {/* Pop Stats Selector */}
-        <div className="mb-8">
-          <div className="text-center mb-4">
-            <h3 className="text-xl font-hockey font-black text-neon-cyan tracking-widest uppercase mb-2">
-              Pop Inspector
-            </h3>
-            <p className="text-ice-400 font-retro tracking-wide">
-              Select any pop to view detailed stats and information
-            </p>
-          </div>
-
-          <PopDropdown
-            pops={pops}
-            selectedPop={selectedPopForStats}
-            onPopSelect={setSelectedPopForStats}
-            placeholder="Choose a pop to inspect..."
-          />
-        </div>
 
         {/* Enhanced Search and Control Panel */}
         <div className="space-y-6">
@@ -159,10 +130,6 @@ export const CollectionBrowser: React.FC<CollectionBrowserProps> = ({ pops }) =>
         </div>
       </div>
 
-      {/* Pop Stats Display */}
-      {selectedPopForStats && (
-        <PopStatsCard pop={selectedPopForStats} />
-      )}
 
       {/* Standard Pops Collection - Improved Spacing */}
       {(!showCustomOnly && standardPops.length > 0) && (

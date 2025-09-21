@@ -8,6 +8,7 @@ import { PopLibrary } from './components/PopLibrary';
 import { TabNavigation } from './components/TabNavigation';
 import { CollectionBrowser } from './components/CollectionBrowser';
 import { CreatePopModal } from './components/CreatePopModal';
+import { PopCards } from './components/PopCards';
 
 // Enhanced lineup utility with vintage naming
 const createEmptyLineup = (): Lineup => ({
@@ -33,7 +34,7 @@ function App() {
   const [currentLineup, setCurrentLineup] = useState<Lineup>(() => createEmptyLineup());
   const [selectedPop, setSelectedPop] = useState<Pop | null>(null);
   const [availablePops, setAvailablePops] = useState<Pop[]>([]);
-  const [activeTab, setActiveTab] = useState<'lineup' | 'collection'>('lineup');
+  const [activeTab, setActiveTab] = useState<'lineup' | 'collection' | 'pop-cards'>('lineup');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Load pops from localStorage or use initial pops
@@ -79,10 +80,6 @@ function App() {
     }));
   };
 
-  const clearLineup = () => {
-    setCurrentLineup(createEmptyLineup());
-    setSelectedPop(null);
-  };
 
   const handlePopClick = (pop: Pop) => {
     setSelectedPop(selectedPop?.id === pop.id ? null : pop);
@@ -128,46 +125,16 @@ function App() {
             </div>
 
             <p className="text-ice-400 font-retro tracking-wide text-lg max-w-2xl mx-auto">
-              Build your ultimate diet soda hockey team with authentic vintage styling
+              Build your ultimate diet pop hockey team
             </p>
           </div>
 
           {/* Enhanced Scoreboard Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            {/* Team Name */}
-            <div className="text-center">
-              <div className="hockey-line-header bg-gradient-to-r from-neon-blue to-neon-cyan text-black mb-2">
-                Team Name
-              </div>
-              <div className="text-2xl font-hockey font-black text-neon-blue">
-                {currentLineup.name.toUpperCase()}
-              </div>
-            </div>
-
-            {/* Completion */}
-            <div className="text-center">
-              <div className="hockey-line-header bg-gradient-to-r from-hockey-gold to-yellow-500 text-black mb-2">
-                Completion
-              </div>
-              <div className="text-2xl font-hockey font-black text-hockey-gold">
-                {completionPercentage}%
-              </div>
-            </div>
-
-            {/* Players */}
-            <div className="text-center">
-              <div className="hockey-line-header bg-gradient-to-r from-neon-green to-green-400 text-black mb-2">
-                Players
-              </div>
-              <div className="text-2xl font-hockey font-black text-neon-green">
-                {assignedCount}/18
-              </div>
-            </div>
-
-            {/* Available Pops */}
+          <div className="flex justify-center mb-6">
+            {/* Current Database */}
             <div className="text-center">
               <div className="hockey-line-header bg-gradient-to-r from-hockey-silver to-gray-400 text-black mb-2">
-                Arsenal
+                Current Database
               </div>
               <div className="text-2xl font-hockey font-black text-hockey-silver">
                 {availablePops.length}
@@ -177,21 +144,6 @@ function App() {
 
           {/* Enhanced Control Panel */}
           <div className="flex flex-wrap items-center justify-center gap-4">
-            {/* Clear Lineup Button */}
-            <button
-              onClick={clearLineup}
-              className="
-                chrome-button px-6 py-3 rounded-lg
-                font-retro font-bold tracking-wide uppercase
-                transition-all duration-300
-                transform hover:scale-105 active:scale-95
-                bg-gradient-to-r from-red-500 to-red-700
-                hover:from-red-600 hover:to-red-800
-                text-white shadow-lg hover:shadow-xl
-              "
-            >
-              🔄 Reset Team
-            </button>
 
             {/* Quick Stats */}
             {selectedPop && (
@@ -226,89 +178,42 @@ function App() {
       <main className="px-4 lg:px-8 pb-8">
         {activeTab === 'lineup' ? (
           // Lineup Builder View
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 max-w-[2000px] mx-auto">
-            {/* Pop Arsenal/Library */}
-            <div className="order-2 xl:order-1">
-              <PopLibrary
-                pops={availablePops}
-                onPopClick={handlePopClick}
-                selectedPop={selectedPop}
-                onAddCustomPop={() => setShowCreateModal(true)}
-              />
-            </div>
+          <div className="space-y-8 max-w-[2000px] mx-auto">
+            {/* Arsenal and Lineup Grid */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              {/* Pop Arsenal/Library */}
+              <div className="order-2 xl:order-1">
+                <PopLibrary
+                  pops={availablePops}
+                  onPopClick={handlePopClick}
+                  selectedPop={selectedPop}
+                  onAddCustomPop={() => setShowCreateModal(true)}
+                />
+              </div>
 
-            {/* Hockey Lineup Card */}
-            <div className="order-1 xl:order-2">
-              <LineupCard
-                lineup={currentLineup}
-                availablePops={availablePops}
-                onPositionClick={handlePositionClick}
-                onPopRemove={removePop}
-                selectedPop={selectedPop}
-              />
+              {/* Hockey Lineup Card */}
+              <div className="order-1 xl:order-2">
+                <LineupCard
+                  lineup={currentLineup}
+                  availablePops={availablePops}
+                  onPositionClick={handlePositionClick}
+                  onPopRemove={removePop}
+                  selectedPop={selectedPop}
+                />
+              </div>
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'collection' ? (
           // Collection Browser View
           <div className="max-w-[2000px] mx-auto">
             <CollectionBrowser pops={availablePops} />
           </div>
+        ) : (
+          // Pop Cards View
+          <PopCards pops={availablePops} />
         )}
       </main>
 
-      {/* Enhanced Instructions Panel */}
-      <footer className="px-4 lg:px-8 pb-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="arena-display p-6">
-            <div className="text-center mb-4">
-              <h3 className="text-xl font-hockey font-black text-neon-cyan tracking-widest uppercase mb-2">
-                How to Play
-              </h3>
-              <div className="h-px bg-gradient-to-r from-transparent via-neon-cyan to-transparent"></div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-              <div className="flex flex-col items-center">
-                <div className="text-3xl mb-2">🎯</div>
-                <div className="font-retro text-ice-400 text-sm tracking-wide">
-                  <strong className="text-neon-blue">Select</strong> a pop from the arsenal
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <div className="text-3xl mb-2">🏒</div>
-                <div className="font-retro text-ice-400 text-sm tracking-wide">
-                  <strong className="text-hockey-gold">Assign</strong> to any lineup position
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <div className="text-3xl mb-2">⚡</div>
-                <div className="font-retro text-ice-400 text-sm tracking-wide">
-                  <strong className="text-neon-green">Click</strong> filled slots to remove
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <div className="text-3xl mb-2">🏆</div>
-                <div className="font-retro text-ice-400 text-sm tracking-wide">
-                  <strong className="text-hockey-silver">Complete</strong> your dream team
-                </div>
-              </div>
-            </div>
-
-            {/* System Status */}
-            <div className="mt-6 pt-4 border-t border-ice-700 text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-neon-green bg-opacity-20 rounded-full border border-neon-green border-opacity-50">
-                <div className="w-2 h-2 bg-neon-green rounded-full animate-pulse" />
-                <span className="text-xs font-retro text-neon-green tracking-wide uppercase">
-                  Arena Systems Online | {availablePops.length} Pops Loaded | Custom Creation Active
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
 
       {/* Create Pop Modal */}
       <CreatePopModal

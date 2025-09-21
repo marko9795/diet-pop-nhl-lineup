@@ -1,8 +1,8 @@
 import React from 'react';
 
 interface TabNavigationProps {
-  activeTab: 'lineup' | 'collection';
-  onTabChange: (tab: 'lineup' | 'collection') => void;
+  activeTab: 'lineup' | 'collection' | 'pop-cards';
+  onTabChange: (tab: 'lineup' | 'collection' | 'pop-cards') => void;
 }
 
 export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange }) => {
@@ -50,6 +50,28 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabCh
           <div className="relative z-10 flex items-center gap-3">
             <span>🥤</span>
             <span>Collection Browser</span>
+          </div>
+        </button>
+
+        {/* Pop Cards Tab */}
+        <button
+          onClick={() => onTabChange('pop-cards')}
+          className={`
+            relative px-8 py-4 rounded-lg font-hockey font-black text-lg tracking-wider uppercase
+            transition-all duration-300 transform hover:scale-105 ml-2
+            ${activeTab === 'pop-cards'
+              ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-xl'
+              : 'text-ice-300 hover:text-white hover:bg-white hover:bg-opacity-10'
+            }
+          `}
+        >
+          {/* Active tab glow effect */}
+          {activeTab === 'pop-cards' && (
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-20 rounded-lg animate-pulse" />
+          )}
+          <div className="relative z-10 flex items-center gap-3">
+            <span>🃏</span>
+            <span>Pop Cards</span>
           </div>
         </button>
       </div>

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import type { Pop } from '../types';
-import { PopCan } from './PopCan';
 import { PopCan3D } from './PopCan3D';
 
 interface PopStatsCardProps {
@@ -11,19 +10,6 @@ export const PopStatsCard: React.FC<PopStatsCardProps> = ({ pop }) => {
   const currentYear = new Date().getFullYear();
   const isVintage = pop.year && pop.year < currentYear - 10;
   const isLimited = pop.year && pop.year >= currentYear - 2;
-
-  // WebGL support detection
-  const [webGLSupported, setWebGLSupported] = useState<boolean | null>(null);
-  const [use3D, setUse3D] = useState(false);
-
-  useEffect(() => {
-    // Detect WebGL support
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    const supported = !!gl;
-    setWebGLSupported(supported);
-    setUse3D(supported);
-  }, []);
 
   return (
     <div className="arena-display p-8 max-w-2xl mx-auto animate-fade-in">
@@ -47,46 +33,11 @@ export const PopStatsCard: React.FC<PopStatsCardProps> = ({ pop }) => {
         {/* Large Pop Can Display */}
         <div className="flex justify-center">
           <div className="relative">
-            {/* 3D Mode Toggle */}
-            {webGLSupported !== null && (
-              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 z-10">
-                <button
-                  onClick={() => setUse3D(!use3D)}
-                  className="text-xs font-retro text-ice-400 hover:text-neon-cyan transition-colors duration-200 bg-gray-800 bg-opacity-50 px-3 py-1 rounded-full border border-ice-600 hover:border-neon-cyan"
-                  title={use3D ? 'Switch to CSS 3D' : 'Switch to WebGL 3D'}
-                >
-                  {use3D ? '🎨 CSS Mode' : '🌟 3D Mode'}
-                </button>
-              </div>
-            )}
-
-            {/* Render 3D or fallback based on support and user preference */}
-            {use3D && webGLSupported ? (
-              <div className="flex flex-col items-center">
-                <PopCan3D
-                  pop={pop}
-                  size="extra-large"
-                  className="shadow-2xl"
-                />
-                <div className="text-xs font-retro text-ice-400 opacity-70 mt-4 text-center">
-                  🖱️ Drag to rotate • 🌟 WebGL 3D
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center">
-                <PopCan
-                  pop={pop}
-                  size="large"
-                  showName={false}
-                  className="transform scale-150"
-                />
-                {webGLSupported === false && (
-                  <div className="text-xs font-retro text-yellow-400 opacity-80 mt-4 text-center">
-                    ⚠️ WebGL not supported - using CSS fallback
-                  </div>
-                )}
-              </div>
-            )}
+            <PopCan3D
+              pop={pop}
+              size="extra-large"
+              className="shadow-2xl"
+            />
 
             {/* Special Badges */}
             <div className="absolute -top-4 -right-4 space-y-2">

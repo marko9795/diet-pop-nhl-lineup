@@ -93,8 +93,8 @@ interface Lineup {
 **MAJOR UPGRADE**: Revolutionary photorealistic Three.js WebGL 3D pop can visualization
 
 **PopCan3D Component Features**:
-- **🏗️ Realistic Can Geometry**: Tapered cylinders with raised rims, pull-tabs, and embossed details
-- **🎨 Multi-Material System**: Separate aluminum base and brand label materials with advanced PBR
+- **🏗️ Realistic Can Geometry**: Proper soda can proportions (4.83" H × 2.6" D ratio ~1.86:1)
+- **🎨 Simplified Clean Geometry**: Streamlined 4-piece design (body + tapered top + rim + pull tab)
 - **🌟 Advanced Shader Properties**: Index of refraction, clearcoat, transmission, thickness simulation
 - **🌍 HDRI Environment Mapping**: City environment reflections with professional lighting setup
 - **🎯 Cylindrical UV Mapping**: Proper texture wrapping and seamless brand application
@@ -103,10 +103,11 @@ interface Lineup {
 - **⚡ Performance**: 60fps WebGL rendering with optimized BufferGeometry merging
 
 **Technical Excellence**:
-- **Advanced Materials**: MeshPhysicalMaterial with fresnel effects, metalness (0.95), roughness (0.05)
-- **Realistic Lighting**: Environment mapping + directional + point lights for metallic highlights
+- **Realistic Proportions**: Shorter, wider can geometry matching real aluminum cans
+- **Advanced Materials**: MeshPhysicalMaterial with fresnel effects, metalness (0.98), roughness (0.02)
+- **Seamless Geometry**: Eliminated visible seams through simplified, clean geometry merging
 - **Dynamic Textures**: Canvas-based aluminum and label texture generation from pop data
-- **Geometry Optimization**: Complex can shapes merged with BufferGeometryUtils for performance
+- **Geometry Optimization**: Clean can shapes merged with BufferGeometryUtils for performance
 - **Type Safety**: Full TypeScript integration with proper Three.js typing
 
 **Dependencies & Performance**:

@@ -30,8 +30,8 @@ import { Position, Pop, Lineup } from './types';
 ### Tech Stack
 - **Frontend**: React 19.1.1 + TypeScript + Vite 7.1.2
 - **Styling**: Tailwind CSS 4.1.13 with custom vintage 80's hockey theme
-- **3D Graphics**: Three.js 0.180.0 + React-Three-Fiber 9.3.0 for photorealistic 3D pop cans
-- **Design**: WebGL 3D pop cans with PBR materials, ice rink backgrounds, neon effects, glassmorphism UI
+- **3D Graphics**: Three.js 0.180.0 + React-Three-Fiber 9.3.0 + @react-three/drei 10.7.6
+- **Design**: Photorealistic WebGL pop cans with advanced PBR materials, HDRI environments, ice rink backgrounds, neon effects
 - **Storage**: localStorage API for persistence
 
 ### Key Components
@@ -40,8 +40,8 @@ import { Position, Pop, Lineup } from './types';
 - `PopLibrary.tsx` - Arsenal display with search/filter for lineup building
 - `CollectionBrowser.tsx` - Full collection view with improved spacing (clean grid display)
 - `PopCards.tsx` - Dedicated pop inspection tab with dropdown selector and stats display
-- `PopStatsCard.tsx` - Detailed pop inspection with WebGL/CSS 3D toggle and photorealistic display
-- `PopCan3D.tsx` - **NEW**: Photorealistic Three.js pop cans with dynamic textures and PBR materials
+- `PopStatsCard.tsx` - Detailed pop inspection with photorealistic 3D display
+- `PopCan3D.tsx` - **UPGRADED**: Photorealistic Three.js pop cans with advanced PBR materials and HDRI lighting
 - `LineupCard.tsx` - Hockey formation with 3D position slots
 - `PopCan.tsx` - CSS-based 3D metallic pop cans with authentic branding (fallback mode)
 - `PopDropdown.tsx` - Simple select-based pop selector with retro styling
@@ -86,32 +86,34 @@ interface Lineup {
 
 **🃏 Pop Cards Tab**:
 - PopDropdown selector (simple select-based, reliable across all browsers)
-- PopStatsCard display (detailed pop inspection with photorealistic WebGL 3D or CSS fallback)
-- 3D Mode Toggle: Switch between WebGL 3D (photorealistic) and CSS 3D (compatible) modes
-- Focus: Examining individual pop details and statistics with immersive 3D visualization
+- PopStatsCard display (detailed pop inspection with photorealistic 3D visualization)
+- Focus: Examining individual pop details and statistics with immersive 3D experience
 
 ### Photorealistic 3D System
-**NEW FEATURE**: Revolutionary Three.js WebGL 3D pop can visualization
+**MAJOR UPGRADE**: Revolutionary photorealistic Three.js WebGL 3D pop can visualization
 
 **PopCan3D Component Features**:
-- **Realistic Cylindrical Geometry**: Proper 3D cylinder with metallic proportions
-- **Dynamic Texture Generation**: Canvas-based textures from pop brand colors and data
-- **PBR Materials**: Physically-based rendering with metallic properties and reflections
-- **Interactive Controls**: Smooth orbital rotation with momentum and damping
-- **Professional Lighting**: Multi-light setup (ambient, directional, point lights)
-- **Performance**: 60fps WebGL rendering with optimized geometry and materials
+- **🏗️ Realistic Can Geometry**: Tapered cylinders with raised rims, pull-tabs, and embossed details
+- **🎨 Multi-Material System**: Separate aluminum base and brand label materials with advanced PBR
+- **🌟 Advanced Shader Properties**: Index of refraction, clearcoat, transmission, thickness simulation
+- **🌍 HDRI Environment Mapping**: City environment reflections with professional lighting setup
+- **🎯 Cylindrical UV Mapping**: Proper texture wrapping and seamless brand application
+- **✍️ Authentic Typography**: Professional brand labels with dynamic gradients and typography
+- **🔄 Interactive Controls**: Smooth orbital rotation with momentum and damping
+- **⚡ Performance**: 60fps WebGL rendering with optimized BufferGeometry merging
 
-**Progressive Enhancement**:
-- **WebGL Detection**: Automatic feature detection with graceful fallback
-- **User Toggle**: Switch between WebGL 3D and CSS 3D modes
-- **Cross-Browser**: Works on all modern browsers with WebGL support
-- **Mobile Friendly**: Touch-responsive orbital controls
+**Technical Excellence**:
+- **Advanced Materials**: MeshPhysicalMaterial with fresnel effects, metalness (0.95), roughness (0.05)
+- **Realistic Lighting**: Environment mapping + directional + point lights for metallic highlights
+- **Dynamic Textures**: Canvas-based aluminum and label texture generation from pop data
+- **Geometry Optimization**: Complex can shapes merged with BufferGeometryUtils for performance
+- **Type Safety**: Full TypeScript integration with proper Three.js typing
 
-**Technical Implementation**:
-- **Dependencies**: Three.js 0.180.0, @react-three/fiber 9.3.0, @react-three/drei 10.7.6
-- **Bundle Impact**: +300KB gzipped (acceptable for visual impact)
-- **Performance**: Optimized geometry, texture caching, proper cleanup
-- **Type Safety**: Full TypeScript integration with @types/three
+**Dependencies & Performance**:
+- **Core**: Three.js 0.180.0, @react-three/fiber 9.3.0, @react-three/drei 10.7.6
+- **Bundle Impact**: ~1.2MB total (acceptable for photorealistic 3D capability)
+- **Performance**: Optimized geometry, texture caching, efficient material systems
+- **Compatibility**: Modern browsers with WebGL 1.0+ support
 
 ### Custom Pop Creation
 **Feature**: Users can create custom pops via "CREATE NEW" button in PopLibrary (Lineup Builder tab)
@@ -172,7 +174,8 @@ git add . && git commit -m "feat: describe changes" && git push
 ### Debugging
 **Blank Screen**: Check TypeScript imports use `import type` for types
 **TypeScript**: Verify proper default exports and type imports
-**Performance**: Use React DevTools for component analysis
+**3D Rendering**: Check WebGL support, console for Three.js errors, verify geometry/material setup
+**Performance**: Use React DevTools for component analysis, Chrome DevTools for WebGL debugging
 
 ## Maintenance Authority
 
@@ -185,10 +188,10 @@ git add . && git commit -m "feat: describe changes" && git push
 - Import violations → fix TypeScript imports
 
 **Quality Thresholds**:
-- Bundle size: <500KB initial, <2MB total (Three.js adds ~300KB but acceptable for 3D)
+- Bundle size: <500KB initial, <2MB total (~1.2MB with Three.js - acceptable for photorealistic 3D)
 - Load time: <3s on 3G, <1s on WiFi
 - Complexity: <10 per function, <4 nesting levels
-- 3D Performance: 60fps WebGL rendering, graceful fallback for unsupported browsers
+- 3D Performance: 60fps WebGL rendering with optimized geometry and materials
 
 **Proactive Improvements**:
 - Extract components when logical groupings appear
@@ -199,11 +202,11 @@ git add . && git commit -m "feat: describe changes" && git push
 ## Browser Compatibility
 
 - Modern browsers with ES6+ support
-- **WebGL Support**: Required for 3D mode (auto-detects and falls back to CSS 3D)
-- Mobile-responsive design with touch interactions
+- **WebGL Support**: Required for photorealistic 3D rendering (WebGL 1.0+)
+- Mobile-responsive design with touch interactions for 3D controls
 - localStorage API required for data persistence
 
-**3D Mode Requirements**:
-- WebGL 1.0+ support (available in all modern browsers)
-- Hardware acceleration enabled
-- Automatic fallback to CSS 3D for unsupported browsers
+**3D Rendering Requirements**:
+- WebGL 1.0+ support (available in all modern browsers 2015+)
+- Hardware acceleration enabled for optimal performance
+- Supports all major browsers: Chrome, Firefox, Safari, Edge

@@ -20,6 +20,7 @@ export const PopCan: React.FC<PopCanProps> = ({
   selected = false,
   allowTextWrap = false
 }) => {
+
   const sizeClasses = {
     small: 'w-14 h-18',
     medium: 'w-18 h-24',

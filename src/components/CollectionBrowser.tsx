@@ -1,33 +1,23 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import type { Pop } from '../types';
 import { PopCan } from './PopCan';
-import { getAllBrands } from '../data/pops';
+import { usePopFilters } from '../hooks/usePopFilters';
+import { FilterControls } from './FilterControls';
 
 interface CollectionBrowserProps {
   pops: Pop[];
 }
 
 export const CollectionBrowser: React.FC<CollectionBrowserProps> = ({ pops }) => {
-  const [selectedBrand, setSelectedBrand] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showCustomOnly, setShowCustomOnly] = useState(false);
-
-  const brands = useMemo(() => getAllBrands(), []);
-
-  const filteredPops = useMemo(() => {
-    return pops.filter(pop => {
-      const matchesBrand = selectedBrand === 'all' || pop.brand === selectedBrand;
-      const matchesSearch = pop.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           pop.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           (pop.flavor && pop.flavor.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesCustomFilter = !showCustomOnly || pop.isCustom;
-
-      return matchesBrand && matchesSearch && matchesCustomFilter;
-    });
-  }, [pops, selectedBrand, searchTerm, showCustomOnly]);
-
-  const standardPops = filteredPops.filter(pop => !pop.isCustom);
-  const customPops = filteredPops.filter(pop => pop.isCustom);
+  const {
+    filters,
+    actions,
+    filteredPops,
+    standardPops,
+    customPops,
+    hasActiveFilters,
+    resultsCount
+  } = usePopFilters({ pops });
 
   return (
     <div className="space-y-8">
@@ -41,98 +31,19 @@ export const CollectionBrowser: React.FC<CollectionBrowserProps> = ({ pops }) =>
 
 
         {/* Enhanced Search and Control Panel */}
-        <div className="space-y-6">
-          {/* Search Bar */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <div className="text-neon-cyan text-lg">🔍</div>
-            </div>
-            <input
-              type="text"
-              placeholder="Search the complete collection..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="
-                retro-input w-full pl-12 pr-4 py-3 rounded-lg
-                text-lg font-retro tracking-wide
-                transition-all duration-300
-                placeholder:text-ice-500
-              "
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-neon-cyan hover:text-white transition-colors"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Filter Control Panel */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Brand Selector */}
-            <div className="relative">
-              <label className="block text-sm font-retro text-ice-400 mb-2 tracking-wide uppercase">
-                Brand Filter
-              </label>
-              <select
-                value={selectedBrand}
-                onChange={(e) => setSelectedBrand(e.target.value)}
-                className="
-                  retro-input w-full px-4 py-2 rounded-lg
-                  font-retro tracking-wide
-                  transition-all duration-300
-                  cursor-pointer
-                "
-              >
-                <option value="all">All Brands</option>
-                {brands.map(brand => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Custom Filter Toggle */}
-            <div className="flex flex-col">
-              <label className="block text-sm font-retro text-ice-400 mb-2 tracking-wide uppercase">
-                Collection Type
-              </label>
-              <button
-                onClick={() => setShowCustomOnly(!showCustomOnly)}
-                className={`
-                  chrome-button px-4 py-2 rounded-lg
-                  font-retro font-semibold tracking-wide uppercase
-                  transition-all duration-300
-                  ${showCustomOnly
-                    ? 'bg-gradient-to-r from-hockey-gold to-yellow-500 text-black'
-                    : ''
-                  }
-                `}
-              >
-                {showCustomOnly ? '⭐ Custom Only' : '🌐 Show All'}
-              </button>
-            </div>
-          </div>
-
-          {/* Results Summary */}
-          <div className="flex items-center justify-center">
-            <div className="font-retro text-ice-400 tracking-wide text-center">
-              <span className="text-neon-cyan font-bold text-xl">{filteredPops.length}</span>
-              <span className="mx-2">pop{filteredPops.length !== 1 ? 's' : ''} in collection</span>
-              {searchTerm && (
-                <span className="block text-sm mt-1 text-hockey-gold">
-                  Filtered by: "{searchTerm}"
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
+        <FilterControls
+          filters={filters}
+          actions={actions}
+          searchPlaceholder="Search the complete collection..."
+          showCreateButton={false}
+          resultsCount={resultsCount}
+          hasActiveFilters={hasActiveFilters}
+        />
       </div>
 
 
       {/* Standard Pops Collection - Improved Spacing */}
-      {(!showCustomOnly && standardPops.length > 0) && (
+      {(!filters.showCustomOnly && standardPops.length > 0) && (
         <div className="arena-display p-8">
           <div className="flex items-center justify-center mb-8">
             <div className="h-px bg-gradient-to-r from-transparent via-hockey-silver to-transparent flex-1"></div>
@@ -218,13 +129,13 @@ export const CollectionBrowser: React.FC<CollectionBrowserProps> = ({ pops }) =>
           <div className="text-center py-16">
             <div className="text-6xl mb-4 opacity-50">🥤</div>
             <div className="text-xl font-hockey text-ice-500 mb-4 tracking-wide uppercase">
-              {searchTerm || selectedBrand !== 'all' || showCustomOnly
+              {hasActiveFilters
                 ? 'No Pops Match Your Filters'
                 : 'Collection Empty'
               }
             </div>
             <div className="text-sm font-retro text-ice-600 mb-6">
-              {searchTerm || selectedBrand !== 'all'
+              {hasActiveFilters
                 ? 'Try adjusting your search or filters'
                 : 'Start building your collection'
               }

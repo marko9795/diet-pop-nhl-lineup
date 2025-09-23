@@ -1,6 +1,6 @@
 import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import type { Texture } from 'three';
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -13,58 +13,65 @@ interface PopCan3DProps {
   autoRotate?: boolean;
 }
 
-// Helper function to create realistic can geometry
+// Helper function to create authentic can profile points
+const createCanProfile = (): THREE.Vector2[] => {
+  const points: THREE.Vector2[] = [];
+
+  // Real soda can proportions: 4.83" tall × 2.6" diameter
+  const canHeight = 2.4;
+  const maxRadius = 0.65;  // Maximum can radius
+  const topRadius = 0.53;  // Top opening radius
+  const rimRadius = 0.55;  // Rim outer radius
+
+  // Start from bottom center (Y = 0 at bottom)
+  const bottomY = -canHeight * 0.5;
+  const topY = canHeight * 0.5;
+
+  // Bottom of can - slight concave curve (authentic aluminum can bottom)
+  points.push(new THREE.Vector2(0, bottomY));                          // Center bottom
+  points.push(new THREE.Vector2(0.1, bottomY + 0.02));                 // Small rise
+  points.push(new THREE.Vector2(0.3, bottomY + 0.05));                 // Bottom curve
+  points.push(new THREE.Vector2(maxRadius - 0.05, bottomY + 0.08));    // Transition to sidewall
+
+  // Main body - straight cylindrical section
+  points.push(new THREE.Vector2(maxRadius, bottomY + 0.12));           // Body start
+  points.push(new THREE.Vector2(maxRadius, topY - 0.3));               // Body end (most of the can)
+
+  // Neck taper - gradual reduction to top
+  points.push(new THREE.Vector2(maxRadius - 0.02, topY - 0.25));       // Start of neck taper
+  points.push(new THREE.Vector2(rimRadius, topY - 0.15));              // Neck middle
+  points.push(new THREE.Vector2(topRadius + 0.02, topY - 0.08));       // Approaching rim
+
+  // Top rim - beveled edge detail
+  points.push(new THREE.Vector2(topRadius + 0.025, topY - 0.05));      // Outer rim
+  points.push(new THREE.Vector2(topRadius + 0.02, topY - 0.02));       // Rim bevel
+  points.push(new THREE.Vector2(topRadius, topY));                     // Top edge
+
+  return points;
+};
+
+// Helper function to create realistic can geometry using LatheGeometry
 const createRealisticCanGeometry = (): THREE.BufferGeometry => {
-  // Real soda can proportions: 4.83" tall × 2.6" diameter (ratio ~1.86:1)
-  const canHeight = 2.4; // Much shorter for realistic proportions
-  const bodyRadius = 0.65; // Wider for proper can shape
-  const topRadius = 0.53; // Slight taper at top
-  const rimHeight = 0.03;
+  // Create the can profile
+  const profile = createCanProfile();
 
-  // Main cylindrical body (90% of total height)
-  const bodyHeight = canHeight * 0.9;
-  const bodyGeometry = new THREE.CylinderGeometry(
-    bodyRadius, bodyRadius, bodyHeight, 32, 1, false
-  );
+  // Create the main can body using LatheGeometry
+  const canGeometry = new THREE.LatheGeometry(profile, 32);
 
-  // Top section with slight taper (10% of height)
-  const topHeight = canHeight * 0.1;
-  const topGeometry = new THREE.CylinderGeometry(
-    topRadius, bodyRadius, topHeight, 32, 1, false
-  );
-
-  // Top rim
-  const rimGeometry = new THREE.CylinderGeometry(
-    topRadius + 0.02, topRadius, rimHeight, 32, 1, false
-  );
-
-  // Pull tab (simple raised area)
+  // Create simple pull tab as separate geometry
   const tabGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.01, 12, 1, false);
 
-  // Create meshes and position them
-  const bodyMesh = new THREE.Mesh(bodyGeometry);
-  bodyMesh.position.y = -canHeight * 0.05;
-
-  const topMesh = new THREE.Mesh(topGeometry);
-  topMesh.position.y = canHeight * 0.4;
-
-  const rimMesh = new THREE.Mesh(rimGeometry);
-  rimMesh.position.y = canHeight * 0.48;
-
+  // Position tab on top
   const tabMesh = new THREE.Mesh(tabGeometry);
-  tabMesh.position.set(0.2, canHeight * 0.5, 0);
+  tabMesh.position.set(0.2, 1.15, 0); // Position on top surface
 
-  // Create group and add meshes
+  // Merge can body with pull tab
   const group = new THREE.Group();
-  group.add(bodyMesh);
-  group.add(topMesh);
-  group.add(rimMesh);
+  group.add(new THREE.Mesh(canGeometry));
   group.add(tabMesh);
 
-  // Update matrices
   group.updateMatrixWorld(true);
 
-  // Collect geometries for merging
   const geometries: THREE.BufferGeometry[] = [];
   group.children.forEach((child) => {
     if (child instanceof THREE.Mesh) {
@@ -74,12 +81,11 @@ const createRealisticCanGeometry = (): THREE.BufferGeometry => {
     }
   });
 
-  // Merge all geometries into one
   const merged = mergeGeometries(geometries);
-  return merged || bodyGeometry;
+  return merged || canGeometry;
 };
 
-// Helper function to create realistic aluminum base texture
+// Helper function to create realistic aluminum base texture optimized for LatheGeometry
 const createAluminumTexture = (width = 512, height = 512): Texture => {
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -89,22 +95,27 @@ const createAluminumTexture = (width = 512, height = 512): Texture => {
     throw new Error('Failed to get 2D canvas context');
   }
 
-  // Base aluminum color
-  ctx.fillStyle = '#E8E8E8';
+  // Base aluminum color with slight gradient
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, '#F0F0F0');
+  gradient.addColorStop(0.5, '#E8E8E8');
+  gradient.addColorStop(1, '#E0E0E0');
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
-  // Add brushed metal effect with vertical lines
-  for (let i = 0; i < width; i += 2) {
-    const opacity = Math.random() * 0.1 + 0.05;
-    ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+  // Vertical brushed metal lines (more pronounced for LatheGeometry)
+  for (let i = 0; i < width; i += 1) {
+    const opacity = Math.random() * 0.15 + 0.05;
+    const brightness = Math.random() > 0.5 ? 255 : 0;
+    ctx.fillStyle = `rgba(${brightness},${brightness},${brightness},${opacity})`;
     ctx.fillRect(i, 0, 1, height);
   }
 
-  // Add some horizontal scratches for realism
-  for (let i = 0; i < 20; i++) {
+  // Subtle horizontal variation for cylinder mapping
+  for (let i = 0; i < 15; i++) {
     const y = Math.random() * height;
-    const opacity = Math.random() * 0.05 + 0.02;
-    ctx.strokeStyle = `rgba(0,0,0,${opacity})`;
+    const opacity = Math.random() * 0.03 + 0.01;
+    ctx.strokeStyle = `rgba(200,200,200,${opacity})`;
     ctx.lineWidth = 0.5;
     ctx.beginPath();
     ctx.moveTo(0, y);
@@ -113,9 +124,9 @@ const createAluminumTexture = (width = 512, height = 512): Texture => {
   }
 
   const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping; // Seamless horizontal wrapping for brushed effect
-  texture.wrapT = THREE.RepeatWrapping; // Vertical repeating for consistent texture
-  texture.repeat.set(3, 2); // Slight tiling for detailed brushed metal appearance
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping; // Better for LatheGeometry vertical mapping
+  texture.repeat.set(2, 1); // Optimized for cylindrical wrapping
   return texture;
 };
 
@@ -197,9 +208,9 @@ const createLabelTexture = (pop: Pop, width = 512, height = 512): Texture => {
   ctx.fillText('DIET', width / 2, dietY + 6);
 
   const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  texture.repeat.set(1, 1);
+  texture.wrapS = THREE.RepeatWrapping; // Wrap around the cylinder
+  texture.wrapT = THREE.ClampToEdgeWrapping; // Clamp top to bottom for LatheGeometry
+  texture.repeat.set(1, 1); // Single wrap optimized for LatheGeometry UV layout
   return texture;
 };
 
@@ -232,43 +243,23 @@ const CanMesh: React.FC<{ pop: Pop; autoRotate: boolean }> = ({ pop, autoRotate 
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
-      {/* Main aluminum body with enhanced realistic metallic properties */}
+      {/* Main aluminum body with clean metallic appearance */}
       <mesh geometry={geometry}>
-        <meshPhysicalMaterial
+        <meshStandardMaterial
           map={aluminumTexture}
-          metalness={0.98}
-          roughness={0.02}
-          clearcoat={0.9}
-          clearcoatRoughness={0.05}
-          reflectivity={0.95}
-          envMapIntensity={2.0}
-          ior={1.8}
-          transmission={0.0}
-          thickness={0.3}
-          attenuationColor="#F0F0F0"
-          attenuationDistance={0.8}
-          anisotropy={0.8}
-          anisotropyRotation={0}
+          metalness={0.8}
+          roughness={0.1}
         />
       </mesh>
 
-      {/* Label overlay with enhanced semi-transparent properties */}
+      {/* Label overlay with clean appearance */}
       <mesh geometry={geometry} position={[0, 0, 0.0005]}>
-        <meshPhysicalMaterial
+        <meshStandardMaterial
           map={labelTexture}
-          metalness={0.15}
-          roughness={0.25}
-          clearcoat={0.7}
-          clearcoatRoughness={0.03}
+          metalness={0.1}
+          roughness={0.4}
           transparent={true}
-          opacity={0.94}
-          envMapIntensity={0.8}
-          ior={1.45}
-          transmission={0.08}
-          thickness={0.02}
-          attenuationColor="#FFFFFF"
-          attenuationDistance={0.3}
-          anisotropy={0.2}
+          opacity={0.95}
         />
       </mesh>
     </group>
@@ -315,39 +306,31 @@ export const PopCan3D: React.FC<PopCan3DProps> = ({
           background: 'transparent'
         }}
       >
-        {/* Environment mapping for realistic reflections */}
-        <Environment
-          preset="city"
-          background={false}
-          blur={0.2}
-        />
+        {/* Enhanced lighting for metallic aluminum surfaces */}
+        <ambientLight intensity={0.3} />
 
-        {/* Enhanced lighting setup for metallic surfaces */}
-        <ambientLight intensity={0.2} />
-        <directionalLight
-          position={[10, 10, 5]}
-          intensity={0.8}
+        {/* Main spotlight for realistic metallic highlights */}
+        <spotLight
+          position={[5, 8, 3]}
+          intensity={1.2}
+          angle={Math.PI / 6}
+          penumbra={0.3}
           color="#ffffff"
           castShadow
         />
-        <directionalLight
-          position={[-5, 5, 3]}
-          intensity={0.4}
-          color="#87ceeb"
-        />
 
-        {/* Key light for metallic highlights */}
-        <pointLight
-          position={[3, 4, 2]}
+        {/* Key directional light */}
+        <directionalLight
+          position={[10, 10, 5]}
           intensity={0.6}
           color="#ffffff"
         />
 
-        {/* Rim light for edge definition */}
-        <pointLight
-          position={[-2, 2, -3]}
+        {/* Fill light for even illumination */}
+        <directionalLight
+          position={[-3, 3, 2]}
           intensity={0.3}
-          color="#ffd700"
+          color="#f0f8ff"
         />
 
         {/* 3D Can */}

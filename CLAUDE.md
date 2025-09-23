@@ -37,11 +37,12 @@ import { Position, Pop, Lineup } from './types';
 ### Key Components
 - `App.tsx` - Main arena application with 3-tab navigation (Lineup Builder + Collection Browser + Pop Cards)
 - `TabNavigation.tsx` - Hockey-themed tab switching interface with 3 tabs
-- `PopLibrary.tsx` - Arsenal display with search/filter for lineup building
-- `CollectionBrowser.tsx` - Full collection view with improved spacing (clean grid display)
+- `PopLibrary.tsx` - **REFACTORED**: Arsenal display using shared usePopFilters hook and FilterControls component
+- `CollectionBrowser.tsx` - **REFACTORED**: Full collection view using shared filtering logic (clean grid display)
+- `FilterControls.tsx` - **NEW**: Reusable search/filter UI component with optional create button
 - `PopCards.tsx` - Dedicated pop inspection tab with dropdown selector and stats display
 - `PopStatsCard.tsx` - Detailed pop inspection with photorealistic 3D display
-- `PopCan3D.tsx` - **UPGRADED**: Photorealistic Three.js pop cans with advanced PBR materials and HDRI lighting
+- `PopCan3D.tsx` - **OPTIMIZED**: Streamlined Three.js component (730→142 lines) with useMemo performance optimization
 - `LineupCard.tsx` - Hockey formation with 3D position slots
 - `PopCan.tsx` - CSS-based 3D metallic pop cans with authentic branding (fallback mode)
 - `PopDropdown.tsx` - Simple select-based pop selector with retro styling
@@ -68,6 +69,11 @@ interface Lineup {
 - `src/types/index.ts` - Centralized type definitions
 - `src/data/pops.ts` - 25+ authentic diet sodas with brand colors
 - `src/utils/lineup.ts` - Lineup management utilities
+- `src/utils/colors.ts` - **NEW**: Shared color utilities with WCAG contrast calculations
+- `src/utils/textureGeneration.ts` - **NEW**: Three.js texture creation functions (extracted from PopCan3D)
+- `src/utils/geometryGeneration.ts` - **NEW**: Three.js geometry creation functions (LatheGeometry)
+- `src/hooks/usePopFilters.ts` - **NEW**: Custom hook for shared filtering logic
+- `src/components/FilterControls.tsx` - **NEW**: Reusable search/filter UI component
 - `src/index.css` - Custom 3D effects, animations, arena styling
 - `tailwind.config.js` - Vintage hockey color palette (ice-, neon-, hockey- prefixed)
 
@@ -99,14 +105,16 @@ interface Lineup {
 - **🎯 Optimized UV Mapping**: LatheGeometry's native cylindrical UV coordinates for seamless texture wrapping
 - **✍️ Simplified Brand Graphics**: Clean, readable labels optimized for cylindrical surface mapping
 - **🔄 Interactive Controls**: Smooth orbital rotation with momentum and damping
-- **⚡ Performance**: 60fps WebGL rendering with single-geometry LatheGeometry (no merging needed)
+- **⚡ Performance**: 60fps WebGL rendering with useMemo optimization for geometry and texture creation
+- **🔧 Modular Architecture**: Utilities extracted to separate modules for maintainability (730→142 lines)
 
 **Technical Excellence - LatheGeometry Implementation**:
-- **Professional Geometry**: Single LatheGeometry created from authentic can profile points
+- **Professional Geometry**: Single LatheGeometry created from authentic can profile points (`utils/geometryGeneration.ts`)
 - **Industry Best Practices**: Following Three.js forum recommendations for realistic 3D cans
 - **Optimized Materials**: MeshStandardMaterial with metalness (0.8) and strategic roughness values
 - **Enhanced Lighting**: Spotlight (intensity 1.2) + directional lights for proper metallic surface illumination
-- **Better Performance**: Eliminated complex geometry merging, reduced bundle size by ~60KB
+- **Modular Architecture**: Texture generation extracted to `utils/textureGeneration.ts` for reusability
+- **Performance Optimization**: useMemo hooks prevent unnecessary geometry/texture recreation
 - **Authentic Proportions**: Real soda can dimensions (4.83" H × 2.6" D) with proper curves and bevels
 
 **Dependencies & Performance**:
